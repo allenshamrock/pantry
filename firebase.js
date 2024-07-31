@@ -11,7 +11,7 @@ const firebaseConfig = {
   projectId: "pantryapp-d1628",
   storageBucket: "pantryapp-d1628.appspot.com",
   messagingSenderId: "1018101482940",
-  appId: "1:1018101482940:web:8ce4f53fc8cbeefd46d7b9",
+  appId: "",
 };
 
 // Initialize Firebase
