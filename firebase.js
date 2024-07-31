@@ -9,20 +9,12 @@ dotenv.config()
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-<<<<<<< HEAD
-  apiKey: "",
-=======
   apiKey: process.env.REACT_APP_API_KEY,
->>>>>>> 1063542 ({Enh}:IMplemented the feature to get the items from the firebase database)
   authDomain: "pantryapp-d1628.firebaseapp.com",
   projectId: "pantryapp-d1628",
   storageBucket: "pantryapp-d1628.appspot.com",
   messagingSenderId: "1018101482940",
-<<<<<<< HEAD
-  appId: "",
-=======
   appId: process.env.REACT_APP_ID,
->>>>>>> 1063542 ({Enh}:IMplemented the feature to get the items from the firebase database)
 };
 
 // Initialize Firebase
