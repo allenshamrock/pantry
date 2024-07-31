@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import { Box, Stack, Typography } from "@mui/material";
 import { firestore } from "@/firebase";
-import { collection } from "firebase/firestore";
+import { collection, getDocs, query } from "firebase/firestore";
 
 export default function Home() {
   const items = [
@@ -17,10 +17,20 @@ export default function Home() {
     "Cabbage",
   ];
 
-  useEffect(()=>{
-    const items = collection(firestore,'pantry')
-    console.log(items)
-  },[])
+  useEffect(() => {
+    const updatePantry = async () => {
+      //Get a list of items in the pantry
+      const snapshot = query(collection(firestore, "pantry"));
+      const docs = await getDocs(snapshot);
+      const pantryList = [];
+      docs.forEach((doc) => {
+        pantryList.push(doc.id);
+      });
+      // console.log(pantryList)
+
+    };
+    updatePantry();
+  }, []);
   return (
     <Box
       width="100vw"
