@@ -36,13 +36,14 @@ export default function Home() {
   };
   const [itemName, setItemName] = useState("");
   const [pantry, setPantry] = useState([]);
+  const [filteredPantry, setFilteredPantry] = useState([]);
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  //Getting items from the db (GET)
+  // Getting items from the db (GET)
   const updatePantry = async () => {
-    //Get a list of items in the pantry
+    // Get a list of items in the pantry
     const snapshot = query(collection(firestore, "pantry"));
     const docs = await getDocs(snapshot);
     const pantryList = [];
@@ -50,31 +51,29 @@ export default function Home() {
       pantryList.push({ name: doc.id, ...doc.data() });
     });
     setPantry(pantryList);
+    setFilteredPantry(pantryList);
     console.log(pantryList);
   };
   useEffect(() => {
     updatePantry();
   }, []);
 
-  //Adding items to the db(POST)
+  // Adding items to the db (POST)
   const addItem = async (item) => {
-    // console.log(item);
     const docRef = doc(collection(firestore, "pantry"), item);
-    //Check if item already exists
+    // Check if item already exists
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { count } = docSnap.data();
-      console.log(docSnap.data());
       await setDoc(docRef, { count: count + 1 });
     } else {
       await setDoc(docRef, { count: 1 });
     }
     await updatePantry();
-
-    setItemName(""); //Resetting the input field back to an empty string
+    setItemName(""); // Resetting the input field back to an empty string
   };
 
-  //Removing items to the db(DELETE)
+  // Removing items from the db (DELETE)
   const removeItems = async (item) => {
     const docRef = doc(collection(firestore, "pantry"), item);
     const docSnap = await getDoc(docRef);
@@ -86,8 +85,24 @@ export default function Home() {
         await setDoc(docRef, { count: count - 1 });
       }
     }
-    updatePantry()
+    updatePantry();
   };
+
+  // Filtering an existing item
+  const handleSearch = () => {
+    const filteredItems = pantry.filter((item) =>
+      item.name.toLowerCase().includes(itemName.toLowerCase())
+    );
+    setFilteredPantry(filteredItems);
+    setItemName(""); // Clear the search input field
+  };
+
+  // Resetting the filtered items to the full list
+  const resetFilter = () => {
+    setFilteredPantry(pantry);
+    setItemName("");
+  };
+
   return (
     <Box
       width="100vw"
@@ -98,6 +113,28 @@ export default function Home() {
       flexDirection={"column"}
       gap={2}
     >
+      <Box
+        display={"flex"}
+        direction={"row"}
+        justifyContent={"center"}
+        alignContent={"center"}
+        gap={2}
+      >
+        <TextField
+          label="Search for an item"
+          id="filled-hidden-label-normal"
+          variant="filled"
+          fullWidth
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+        />
+        <Button variant="contained" onClick={handleSearch}>
+          Search
+        </Button>
+        <Button variant="contained"onClick={resetFilter}>
+          Reset
+        </Button>
+      </Box>
       <Modal
         open={open}
         onClose={handleClose}
@@ -148,7 +185,7 @@ export default function Home() {
           </Typography>
         </Box>
         <Stack width={"800px"} height={"300px"} spacing={2} overflow={"auto"}>
-          {pantry.map(({ name, count }) => (
+          {filteredPantry.map(({ name, count }) => (
             <Box
               key={name}
               width={"100%"}
@@ -160,11 +197,11 @@ export default function Home() {
               paddingX={5}
             >
               <Typography variant="h5" color={"#333"} textAlign={"center"}>
-                {/* Capitalizing the first letters of the words  */}
+                {/* Capitalizing the first letters of the words */}
                 {name.charAt(0).toUpperCase() + name.slice(1)}
               </Typography>
               <Typography variant="h5" color={"#333"} textAlign={"center"}>
-                quantity:{count}
+                quantity: {count}
               </Typography>
               <Button variant="contained" onClick={() => removeItems(name)}>
                 Delete
